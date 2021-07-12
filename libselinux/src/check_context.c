@@ -11,7 +11,7 @@
 
 int security_check_context(const char * con)
 {
-	char path[PATH_MAX];
+	char path[PATH_MAX];// comment by Clark:: limits.h 4096  ::2021-4-9
 	int fd, ret;
 
 	if (!selinux_mnt) {

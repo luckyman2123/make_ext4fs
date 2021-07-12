@@ -74,6 +74,7 @@ int load_canned_fs_config(const char* fn) {
 
 	fclose(f);
 
+	// comment by Clark:: 比较排序  ::2021-4-9
 	qsort(canned_data, canned_used, sizeof(Path), path_compare);
 	printf("loaded %d fs_config entries\n", canned_used);
 

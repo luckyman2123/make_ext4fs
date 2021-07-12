@@ -141,6 +141,7 @@ static u32 build_directory_structure(const char *full_path, const char *dir_path
 	bool needs_lost_and_found = false;
 
 	if (full_path) {
+		// comment by Clark:: 扫描路径  ::2021-4-9
 		entries = scandir(full_path, &namelist, filter_dot, (void*)alphasort);
 		if (entries < 0) {
 			error_errno("scandir");
@@ -166,11 +167,24 @@ static u32 build_directory_structure(const char *full_path, const char *dir_path
 		if (dentries[i].filename == NULL)
 			critical_error_errno("strdup");
 
+		// comment by Clark:: asprintf These functions are GNU extensions, not in C or POSIX   ::2021-4-9
+
+		/*
+		comment by Clark:: The  functions  asprintf()  and vasprintf() are analogs of sprintf(3) and vsprintf(3), 
+		except that they allocate a string large enough to hold the
+        output including the terminating null byte ('\0'), and return a pointer to it via the first argument.  This pointer should be passed to free(3) to
+        release the allocated storage when it is no longer needed.
+       ::2021-4-9
+       */
 		asprintf(&dentries[i].path, "%s%s", dir_path, namelist[i]->d_name);
 		asprintf(&dentries[i].full_path, "%s%s", full_path, namelist[i]->d_name);
 
 		free(namelist[i]);
-
+		/* comment by Clark:: lstat: lstat() is identical to stat(), 
+		except that if pathname is a symbolic link, then it returns information about the link itself, 
+		not the  file that it refers to  
+		::2021-4-9
+        */
 		ret = lstat(dentries[i].full_path, &stat);
 		if (ret < 0) {
 			error_errno("lstat");
@@ -229,6 +243,7 @@ static u32 build_directory_structure(const char *full_path, const char *dir_path
 		} else if (S_ISLNK(stat.st_mode)) {
 			dentries[i].file_type = EXT4_FT_SYMLINK;
 			dentries[i].link = calloc(info.block_size, 1);
+			// comment by Clark:: readlink:  ::2021-4-9
 			readlink(dentries[i].full_path, dentries[i].link, info.block_size - 1);
 		} else {
 			error("unknown file type on %s", dentries[i].path);
@@ -261,6 +276,7 @@ static u32 build_directory_structure(const char *full_path, const char *dir_path
 		dirs++;
 	}
 
+	// comment by Clark:: 创建目录  ::2021-4-9
 	inode = make_directory(dir_inode, entries, dentries, dirs);
 
 	for (i = 0; i < entries; i++) {
@@ -513,7 +529,7 @@ int make_ext4fs_internal(int fd, const char *_directory,
 	}
 
 	if (info.block_size <= 0)
-		info.block_size = compute_block_size();
+		info.block_size = compute_block_size();		// comment by Clark:: 默认值 4096  ::2021-4-9
 
 	/* Round down the filesystem length to be a multiple of the block size */
 	info.len &= ~((u64)info.block_size - 1);
@@ -529,6 +545,7 @@ int make_ext4fs_internal(int fd, const char *_directory,
 	if (info.blocks_per_group <= 0)
 		info.blocks_per_group = compute_blocks_per_group();
 
+	// comment by Clark:: 根据总大小及block大小来计算出 inodes 的数量  ::2021-4-9
 	if (info.inodes <= 0)
 		info.inodes = compute_inodes();
 

@@ -109,10 +109,19 @@ void set_selinuxmnt(const char *mnt)
 
 hidden_def(set_selinuxmnt)
 
+/*
+	comment by Clark:: 
+	__attribute__((constructor)) 先于main()函数调用
+	
+	
+
+	::2021-4-9
+
+*/ 
 static void init_lib(void) __attribute__ ((constructor));
 static void init_lib(void)
 {
-	selinux_page_size = sysconf(_SC_PAGE_SIZE);
+	selinux_page_size = sysconf(_SC_PAGE_SIZE);	// comment by Clark:: #define	_SC_PAGE_SIZE			_SC_PAGESIZE  ::2021-4-9
 	init_selinuxmnt();
 }
 

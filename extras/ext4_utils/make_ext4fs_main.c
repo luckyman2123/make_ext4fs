@@ -58,6 +58,7 @@ static void usage(char *path)
 	fprintf(stderr, "    <filename> [<directory>]\n");
 }
 
+// comment by Clark:: 生成 ext4 工具的入口  ::2021-4-9
 int main(int argc, char **argv)
 {
 	int opt;
@@ -223,7 +224,7 @@ int main(int argc, char **argv)
 			return EXIT_FAILURE;
 		}
 	} else {
-		fd = STDOUT_FILENO;
+		fd = STDOUT_FILENO;		// comment by Clark:: 读取标准输入  ::2021-4-9
 	}
 
 	exitcode = make_ext4fs_internal(fd, directory, mountpoint, fs_config_func, gzip,

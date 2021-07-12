@@ -484,6 +484,7 @@ u64 get_file_size(int fd)
 	return computed_size;
 }
 
+// comment by Clark:: 解析出数字 10K, 10M, 10G, 也有可能没有字母后缀 ::2021-4-9
 u64 parse_num(const char *arg)
 {
 	char *endptr;
